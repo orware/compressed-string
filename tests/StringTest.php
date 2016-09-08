@@ -1,5 +1,4 @@
 <?php
-use GuzzleHttp\Psr7;
 use Orware\Compressed\String;
 
 class StringTest extends \PHPUnit_Framework_TestCase
