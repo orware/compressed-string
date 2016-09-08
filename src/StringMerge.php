@@ -11,7 +11,6 @@ class StringMerge
 
         $subjectParts = explode($delimiter, $subject);
 
-        // We have the correct number of Gzipped Strings provided:
         $merged = new String();
 
         foreach ($subjectParts as $part) {
@@ -23,7 +22,6 @@ class StringMerge
                 while ($buffer = $readStream->read(4096)) {
                     $merged->write($buffer);
                 }
-                //$merged->write($string->getDecompressedContents());
             }
         }
 

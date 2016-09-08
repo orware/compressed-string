@@ -12,23 +12,22 @@ class StringTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test', (string) $b);
     }
 */
-	public function memoryUsage($method, $stage = '')
-	{
-		fwrite(STDOUT, "\n");
-    	fwrite(STDOUT, $method . ' ' . $stage . ': ' . memory_get_peak_usage(true) ." (peak)\n");
-    	fwrite(STDOUT, $method . ' ' . $stage . ': ' . memory_get_usage(true) ." (current)\n");
-	}
+    public function memoryUsage($method, $stage = '')
+    {
+        fwrite(STDOUT, "\n");
+        fwrite(STDOUT, $method . ' ' . $stage . ': ' . memory_get_peak_usage(true) ." (peak)\n");
+        fwrite(STDOUT, $method . ' ' . $stage . ': ' . memory_get_usage(true) ." (current)\n");
+    }
 
-	public function log($string, $newline = true)
-	{
-		fwrite(STDOUT, "\n");
-		fwrite(STDOUT, $string);
+    public function log($string, $newline = true)
+    {
+        fwrite(STDOUT, "\n");
+        fwrite(STDOUT, $string);
 
-		if ($newline)
-		{
-			fwrite(STDOUT, "\n");
-		}
-	}
+        if ($newline) {
+            fwrite(STDOUT, "\n");
+        }
+    }
 
     public function testWriteStream()
     {
@@ -60,9 +59,9 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
     public function testPrependStream()
     {
-		$this->memoryUsage(__METHOD__, 'Start');
+        $this->memoryUsage(__METHOD__, 'Start');
 
-		$compressedString = new String();
+        $compressedString = new String();
 
         $content = 'The quick brown fox jumps over the lazy dog';
         $compressedString->write($content);
@@ -72,7 +71,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($textToPrepend.$content, $compressedString->getDecompressedContents());
 
-		$this->memoryUsage(__METHOD__, 'Finish');
+        $this->memoryUsage(__METHOD__, 'Finish');
 
         $compressedString->writeDecompressedContents('tests/files/tmp/prepended_test_decompressed.txt');
         $compressedString->writeCompressedContents('tests/files/tmp/prepended_test_compressed.gz');
@@ -80,7 +79,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
     public function testPrependAndWriteStream()
     {
-		$compressedString = new String();
+        $compressedString = new String();
 
         $content = 'The quick brown fox jumps over the lazy dog';
         $compressedString->write($content);
@@ -100,21 +99,21 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $content = file_get_contents('README.md');
 
-		$compressedString1 = new String(false, 1);
+        $compressedString1 = new String(false, 1);
         $compressedString1->write($content);
 
-    	$compressedString2 = new String(false, 6);
+        $compressedString2 = new String(false, 6);
         $compressedString2->write($content);
 
         $size1 = $compressedString1->getCompressedSize();
         $size2 = $compressedString2->getCompressedSize();
 
         $this->log(__METHOD__, false);
-		$this->log('Original Size: ' . strlen($content), false);
-		$this->log('GZIP Mode 1 Size: ' . $size1, false);
-		$this->log('GZIP Mode 6 Size: ' . $size2);
+        $this->log('Original Size: ' . strlen($content), false);
+        $this->log('GZIP Mode 1 Size: ' . $size1, false);
+        $this->log('GZIP Mode 6 Size: ' . $size2);
 
-    	$this->assertGreaterThan($size2, $size1, 'Gzip Mode 1 should result in the larger file');
+        $this->assertGreaterThan($size2, $size1, 'Gzip Mode 1 should result in the larger file');
     }
 
     /*public function testWriteAfterReadOnlyStream()
@@ -136,5 +135,4 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
         //$compressedString->writeDecompressedContents('write_after_readonly.txt');
     }*/
-
 }
