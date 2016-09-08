@@ -20,16 +20,16 @@ class String
         $this->replaceStream($readOnly, $compressionLevel, $filepath);
     }
 
-	public function replaceStream($readOnly = false, $compressionLevel = 6, $filepath = 'php://memory')
-	{
-		if (substr($filepath, 0, 6) !== 'php://') {
-			$this->isRealFile = true;
-		}
-		$this->compressionLevel = $compressionLevel;
+    public function replaceStream($readOnly = false, $compressionLevel = 6, $filepath = 'php://memory')
+    {
+        if (substr($filepath, 0, 6) !== 'php://') {
+            $this->isRealFile = true;
+        }
+        $this->compressionLevel = $compressionLevel;
         $this->stream = fopen($filepath, 'r+');
         $this->streamObject = Psr7\stream_for($this->stream);
         $this->gzStream = new GzStreamGuzzle($this->streamObject, $readOnly, $this->compressionLevel);
-	}
+    }
 
     public function write($string, $options = 0, $depth = 512)
     {
@@ -114,11 +114,11 @@ class String
 
     public function getReadOnlyStream()
     {
-    	if ($this->isRealFile) {
-			return $this->getGzStream();
-    	}
+        if ($this->isRealFile) {
+            return $this->getGzStream();
+        }
 
-		// More specifically for the in-memory streams:
+        // More specifically for the in-memory streams:
         $this->prepareForRead();
         $gzStreamReadOnly = $this->getGzStream()->readOnlyStream();
 

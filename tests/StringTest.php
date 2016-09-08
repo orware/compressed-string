@@ -117,30 +117,29 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
     public function testReadGzipFile()
     {
-		$this->memoryUsage(__METHOD__, 'Start');
+        $this->memoryUsage(__METHOD__, 'Start');
         $compressedStringFile = new String(true, 6, __DIR__.'/files/companies_first_10.gz');
 
         $readOnlyStream = $compressedStringFile->getReadOnlyStream();
-		$i = 0;
-		$firstLineOutput = '';
-		while($buffer = $readOnlyStream->read()) {
-			if ($i < 1) {
-				$firstLineOutput = $buffer;
-			}
+        $i = 0;
+        $firstLineOutput = '';
+        while ($buffer = $readOnlyStream->read()) {
+            if ($i < 1) {
+                $firstLineOutput = $buffer;
+            }
 
-			$i++;
-		}
+            $i++;
+        }
 
-		$this->assertContains('_id', $firstLineOutput);
+        $this->assertContains('_id', $firstLineOutput);
 
         $this->log(__METHOD__, false);
         $this->memoryUsage(__METHOD__, 'Finish');
-
     }
 
     public function testWriteFileAndReadStream()
     {
-    	$this->memoryUsage(__METHOD__, 'Start');
+        $this->memoryUsage(__METHOD__, 'Start');
 
         $compressedString = new String();
 
@@ -149,20 +148,20 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
         $compressedString->writeCompressedContents(__DIR__.'/files/tmp/write_test.gz');
 
-		$readOnlyStream = $compressedString->getReadOnlyStream();
+        $readOnlyStream = $compressedString->getReadOnlyStream();
         $i = 0;
-		$firstLineOutput = '';
-		while($buffer = $readOnlyStream->read()) {
-			if ($i < 1) {
-				$firstLineOutput = $buffer;
-			}
+        $firstLineOutput = '';
+        while ($buffer = $readOnlyStream->read()) {
+            if ($i < 1) {
+                $firstLineOutput = $buffer;
+            }
 
-			$i++;
-		}
+            $i++;
+        }
 
-		$this->assertContains('_id', $firstLineOutput);
+        $this->assertContains('_id', $firstLineOutput);
 
-		$this->log(__METHOD__, false);
+        $this->log(__METHOD__, false);
         $this->memoryUsage(__METHOD__, 'Finish');
     }
 }
