@@ -1,0 +1,22 @@
+{
+    "name": "orware/compressed-strings",
+    "description": "Based on the wonderful work by Tom Westcott (https://packagist.org/packages/cyberdummy/gzstream) which provided most of the functionality I required. Allows for gzip compressed string streams to be used for holding data. This project was created because I wanted a way to store large database result sets more easily in memory (especially ones that were just going to be output as JSON in an API response), since using a regular PHP array resulted in large memory usage.",
+    "require-dev": {
+
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Omar Ramos",
+            "email": "orware@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/psr7": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Orware\\Compressed\\": "src/"
+        }
+    }
+}
