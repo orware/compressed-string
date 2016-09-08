@@ -22,11 +22,11 @@ class String
 		$this->gzStream = new GzStreamGuzzle($this->streamObject, $readOnly, $this->compressionLevel);
 	}
 
-	public function write($string)
+	public function write($string, $options = 0, $depth = 512)
 	{
 		if (!is_string($string))
 		{
-			$string = json_encode($string);
+			$string = json_encode($string, $options, $depth);
 		}
 
 		return $this->getGzStream()->write($string);
