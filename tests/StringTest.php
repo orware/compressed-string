@@ -72,8 +72,8 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
         $this->memoryUsage(__METHOD__, 'Finish');
 
-        $compressedString->writeDecompressedContents('tests/files/tmp/prepended_test_decompressed.txt');
-        $compressedString->writeCompressedContents('tests/files/tmp/prepended_test_compressed.gz');
+        $compressedString->writeDecompressedContents(__DIR__.'/files/tmp/prepended_test_decompressed.txt');
+        $compressedString->writeCompressedContents(__DIR__.'/files/tmp/prepended_test_compressed.gz');
     }
 
     public function testPrependAndWriteStream()
@@ -90,8 +90,8 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($textToPrepend.$content.$textToAppend, $compressedString->getDecompressedContents());
 
-        $compressedString->writeDecompressedContents('tests/files/tmp/appended_test_decompressed.txt');
-        $compressedString->writeCompressedContents('tests/files/tmp/appended_test_compressed.gz');
+        $compressedString->writeDecompressedContents(__DIR__.'/files/tmp/appended_test_decompressed.txt');
+        $compressedString->writeCompressedContents(__DIR__.'/files/tmp/appended_test_compressed.gz');
     }
 
     public function testDifferentCompressionModes()
@@ -113,6 +113,57 @@ class StringTest extends \PHPUnit_Framework_TestCase
         $this->log('GZIP Mode 6 Size: ' . $size2);
 
         $this->assertGreaterThan($size2, $size1, 'Gzip Mode 1 should result in the larger file');
+    }
+
+    public function testReadGzipFile()
+    {
+		$this->memoryUsage(__METHOD__, 'Start');
+        $compressedStringFile = new String(true, 6, __DIR__.'/files/companies_first_10.gz');
+
+        $readOnlyStream = $compressedStringFile->getReadOnlyStream();
+		$i = 0;
+		$firstLineOutput = '';
+		while($buffer = $readOnlyStream->read()) {
+			if ($i < 1) {
+				$firstLineOutput = $buffer;
+			}
+
+			$i++;
+		}
+
+		$this->assertContains('_id', $firstLineOutput);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+
+    }
+
+    public function testWriteFileAndReadStream()
+    {
+    	$this->memoryUsage(__METHOD__, 'Start');
+
+        $compressedString = new String();
+
+        $content = file_get_contents(__DIR__.'/files/companies_first_10.json');
+        $compressedString->write($content);
+
+        $compressedString->writeCompressedContents(__DIR__.'/files/tmp/write_test.gz');
+
+		$readOnlyStream = $compressedString->getReadOnlyStream();
+        $i = 0;
+		$firstLineOutput = '';
+		while($buffer = $readOnlyStream->read()) {
+			if ($i < 1) {
+				$firstLineOutput = $buffer;
+			}
+
+			$i++;
+		}
+
+		$this->assertContains('_id', $firstLineOutput);
+
+		$this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
     }
 
     /*public function testWriteAfterReadOnlyStream()

@@ -13,14 +13,23 @@ class String
     protected $stream = null;
     protected $streamObject = null;
     protected $compressionLevel = 6;
+    protected $isRealFile = false;
 
-    public function __construct($readOnly = false, $compressionLevel = 6)
+    public function __construct($readOnly = false, $compressionLevel = 6, $filepath = 'php://memory')
     {
-        $this->compressionLevel = $compressionLevel;
-        $this->stream = fopen('php://memory', 'w');
+        $this->replaceStream($readOnly, $compressionLevel, $filepath);
+    }
+
+	public function replaceStream($readOnly = false, $compressionLevel = 6, $filepath = 'php://memory')
+	{
+		if (substr($filepath, 0, 6) !== 'php://') {
+			$this->isRealFile = true;
+		}
+		$this->compressionLevel = $compressionLevel;
+        $this->stream = fopen($filepath, 'r+');
         $this->streamObject = Psr7\stream_for($this->stream);
         $this->gzStream = new GzStreamGuzzle($this->streamObject, $readOnly, $this->compressionLevel);
-    }
+	}
 
     public function write($string, $options = 0, $depth = 512)
     {
@@ -31,19 +40,22 @@ class String
         return $this->getGzStream()->write($string);
     }
 
+    public function read($length = 65536)
+    {
+        $ret = $this->getGzStream()->read($length);
+        return $ret;
+    }
+
     public function prepend($string, $compressionLevel = 6)
     {
         $this->prepareForRead();
         $gzStreamReadOnly = $this->getGzStream()->readOnlyStream();
 
-        $this->compressionLevel = $compressionLevel;
-        $this->stream = fopen('php://memory', 'w');
-        $this->streamObject = Psr7\stream_for($this->stream);
-        $this->gzStream = new GzStreamGuzzle($this->streamObject, false, $compressionLevel);
+        $this->replaceStream(false, $compressionLevel, 'php://memory');
 
         $this->getGzStream()->write($string);
 
-        while ($buffer = $gzStreamReadOnly->read(4096)) {
+        while ($buffer = $gzStreamReadOnly->read()) {
             $this->getGzStream()->write($buffer);
         }
     }
@@ -102,6 +114,11 @@ class String
 
     public function getReadOnlyStream()
     {
+    	if ($this->isRealFile) {
+			return $this->getGzStream();
+    	}
+
+		// More specifically for the in-memory streams:
         $this->prepareForRead();
         $gzStreamReadOnly = $this->getGzStream()->readOnlyStream();
 

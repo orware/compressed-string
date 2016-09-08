@@ -45,7 +45,7 @@ class GzStreamGuzzle implements StreamInterface
         return new self($this->stream, true, $this->level);
     }
 
-    public function read($length)
+    public function read($length = 65536)
     {
         $ret = $this->stream->read($length);
         return $ret;
