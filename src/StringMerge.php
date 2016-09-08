@@ -12,26 +12,23 @@ class StringMerge
 
 		$subjectParts = explode($delimiter, $subject);
 
-		//if ((count($subjectParts) - 1) === $gzippedStrings->count())
-		//{
-			// We have the correct number of Gzipped Strings provided:
-			$merged = new String();
+		// We have the correct number of Gzipped Strings provided:
+		$merged = new String();
 
-			foreach($subjectParts as $part)
+		foreach($subjectParts as $part)
+		{
+			$merged->write($part);
+			if (!$gzippedStrings->isEmpty())
 			{
-				$merged->write($part);
-				if (!$gzippedStrings->isEmpty())
-				{
-					$string = $gzippedStrings->dequeue();
+				$string = $gzippedStrings->dequeue();
 
-					$readStream = $string->getReadOnlyStream();
-					while($buffer = $readStream->read(4096)) {
-						$merged->write($buffer);
-					}
-					//$merged->write($string->getDecompressedContents());
+				$readStream = $string->getReadOnlyStream();
+				while($buffer = $readStream->read(4096)) {
+					$merged->write($buffer);
 				}
+				//$merged->write($string->getDecompressedContents());
 			}
-		//}
+		}
 
 		return $merged;
 	}

@@ -152,10 +152,15 @@ class GzStreamGuzzle implements StreamInterface
         return $size;
     }
 
-    public function getSize ()
+    public function getSize()
     {
         $stat = fstat(StreamWrapper::getResource($this->stream));
         return $stat['size'];
+    }
+
+    public function getWriteSize()
+    {
+		return $this->writeSize;
     }
 
     public function close()
@@ -206,6 +211,7 @@ class GzStreamGuzzle implements StreamInterface
         $this->footerLen = 8;
     }
 
+    // Not working as I hoped:
     public function undoWriteFooter()
     {
 		if ($this->footerLen > 0)

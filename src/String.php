@@ -32,19 +32,26 @@ class String
 		return $this->getGzStream()->write($string);
 	}
 
-	public function prepend($string)
+	public function prepend($string, $compressionLevel = 6)
 	{
 		$this->prepareForRead();
 		$gzStreamReadOnly = $this->getGzStream()->readOnlyStream();
 
+		$this->compressionLevel = $compressionLevel;
 		$this->stream = fopen('php://memory', 'w');
 		$this->streamObject = Psr7\stream_for($this->stream);
-		$this->gzStream = new GzStreamGuzzle($this->streamObject, false, 1);
+		$this->gzStream = new GzStreamGuzzle($this->streamObject, false, $compressionLevel);
 
 		$this->getGzStream()->write($string);
+
 		while($buffer = $gzStreamReadOnly->read(4096)) {
 			$this->getGzStream()->write($buffer);
 		}
+	}
+
+	public function getCompressedSize()
+	{
+		return strlen($this->getCompressedContents());
 	}
 
 	public function getDecompressedContents()

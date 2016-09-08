@@ -6,11 +6,27 @@ use Orware\Compressed\StringMerge;
 
 class StringMergeTest extends \PHPUnit_Framework_TestCase
 {
+	public function memoryUsage($method, $stage = '')
+	{
+		fwrite(STDOUT, "\n");
+    	fwrite(STDOUT, $method . ' ' . $stage . ': ' . memory_get_peak_usage(true) ." (peak)\n");
+    	fwrite(STDOUT, $method . ' ' . $stage . ': ' . memory_get_usage(true) ." (current)\n");
+	}
+
+	public function log($string, $newline = true)
+	{
+		fwrite(STDOUT, "\n");
+		fwrite(STDOUT, $string);
+
+		if ($newline)
+		{
+			fwrite(STDOUT, "\n");
+		}
+	}
+
     public function testMerge()
     {
-    	echo "\n";
-    	echo 'testMerge: ' . memory_get_peak_usage(true) ." (peak)\n";
-		echo 'testMerge: ' . memory_get_usage() ."  (current)\n";
+    	$this->memoryUsage(__METHOD__, '');
 
 		$compressedString1 = new String();
         $content = 'My first string';
@@ -40,12 +56,10 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 
     public function testLargeMergeIntoString()
     {
-    	echo "\n";
-    	echo 'testLargeMergeIntoString Start: ' . memory_get_peak_usage(true) ." (peak)\n";
-		echo 'testLargeMergeIntoString Start: ' . memory_get_usage() ."  (current)\n";
+    	$this->memoryUsage(__METHOD__, 'Start');
 
     	$compressedString1 = new String();
-    	$handle = fopen('tests/files/test_data.json', "r");
+    	$handle = fopen('tests/files/companies_first_10.json', "r");
 		if ($handle)
 		{
 		    while (($buffer = fgets($handle, 4096)) !== false)
@@ -57,7 +71,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 		}
 
 		$compressedString2 = new String();
-    	$handle = fopen('tests/files/test_data.json', "r");
+    	$handle = fopen('tests/files/companies_first_10.json', "r");
 		if ($handle)
 		{
 		    while (($buffer = fgets($handle, 4096)) !== false)
@@ -77,32 +91,22 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 
 		$mergedString = StringMerge::merge($subject, '#|_|#', $list);
 
-		// This method was working fine but used quite a bit of memory due to the full
-		// decompression of the string:
+		$this->log("Merged String Size is: " . $mergedString->getCompressedSize());
 
-		//$actualString = $mergedString->getDecompressedContents();
-		//$expectedSHA256 = '65c29e2df667ebd3db57c9c99e30d56810ecadb15f7b6379097abf98ceece1d6';
-		//$actualSHA256 = hash('sha256', $actualString);
-		//$this->assertEquals($expectedSHA256, $actualSHA256);
+		$mergedString->writeCompressedContents('tests/files/tmp/merged_compressed.gz');
 
-		// Actual size should be less than 300,000 bytes:
-		$this->assertLessThanOrEqual(300000, $mergedString->getGzStream()->getSize());
+		// Actual size should be less than 80,000 bytes:
+		$this->assertLessThanOrEqual(80000, $mergedString->getCompressedSize());
 
-		//file_put_contents('test_large_merge.json', $actualString);
-
-		echo "\n";
-    	echo 'testLargeMergeIntoString Finish: ' . memory_get_peak_usage(true) ." (peak)\n";
-		echo 'testLargeMergeIntoString Finish: ' . memory_get_usage() ."  (current)\n";
+		$this->memoryUsage(__METHOD__, 'Finish');
     }
 
 	public function testLargeMergeIntoObject()
     {
-    	echo "\n";
-    	echo 'testLargeMergeIntoObject Start: ' . memory_get_peak_usage(true) ." (peak)\n";
-		echo 'testLargeMergeIntoObject Start: ' . memory_get_usage() ."  (current)\n";
+    	$this->memoryUsage(__METHOD__, 'Start');
 
     	$compressedString1 = new String();
-    	$handle = fopen('tests/files/test_data.json', "r");
+    	$handle = fopen('tests/files/companies_first_10.json', "r");
 		if ($handle)
 		{
 		    while (($buffer = fgets($handle, 4096)) !== false)
@@ -114,7 +118,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 		}
 
 		$compressedString2 = new String();
-    	$handle = fopen('tests/files/test_data.json', "r");
+    	$handle = fopen('tests/files/companies_first_10.json', "r");
 		if ($handle)
 		{
 		    while (($buffer = fgets($handle, 4096)) !== false)
@@ -159,12 +163,10 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 
 		$mergedString = StringMerge::merge($subject, '#|_|#', $list);
 
-		// Actual size should be less than 300,000 bytes:
-		$this->assertLessThanOrEqual(300000, $mergedString->getGzStream()->getSize());
+		// Actual size should be less than 80,000 bytes:
+		$this->assertLessThanOrEqual(80000, $mergedString->getCompressedSize());
 
 		//file_put_contents('test_large_merge.json', $actualString);
-		echo "\n";
-    	echo 'testLargeMergeIntoObject Finish: ' . memory_get_peak_usage(true) ." (peak)\n";
-		echo 'testLargeMergeIntoObject Finish: ' . memory_get_usage() ."  (current)\n";
+		$this->memoryUsage(__METHOD__, 'Finish');
     }
 }
