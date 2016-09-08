@@ -165,24 +165,4 @@ class StringTest extends \PHPUnit_Framework_TestCase
 		$this->log(__METHOD__, false);
         $this->memoryUsage(__METHOD__, 'Finish');
     }
-
-    /*public function testWriteAfterReadOnlyStream()
-    {
-		$compressedString = new String();
-
-        $content = 'The quick brown fox jumps over the lazy dog';
-        $compressedString->write($content);
-		//$compressedString->writeCompressedContents('write_after_readonly_1.gz');
-
-        $compressedString->getGzStream()->seek(0);
-        $compressedString->getGzStream()->undoWriteFooter();
-
-        $textToAppend = 'APPENDED';
-        $compressedString->write($textToAppend);
-
-		$compressedString->writeCompressedContents('write_after_readonly_2.gz');
-        $this->assertEquals($content.$textToAppend, $compressedString->getDecompressedContents());
-
-        //$compressedString->writeDecompressedContents('write_after_readonly.txt');
-    }*/
 }

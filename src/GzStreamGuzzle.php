@@ -210,25 +210,4 @@ class GzStreamGuzzle implements StreamInterface
         $this->stream->write(pack("V", $this->writeSize));
         $this->footerLen = 8;
     }
-
-    // Not working as I hoped:
-    public function undoWriteFooter()
-    {
-        if ($this->footerLen > 0) {
-        // Attempt to remove the footer content already written by moving to the start of the footer position:
-            $this->seek(($this->headerLen + $this->writeSize) - 1);
-
-            // Restore Hash Context:
-            $this->hashCtx = $this->hashCtxBeforeFooter;
-
-            // Add the filter back in:
-            $resource = StreamWrapper::getResource($this->stream);
-            $params = array('level' => $this->level);
-            $this->filter = stream_filter_append($resource, 'zlib.deflate', STREAM_FILTER_WRITE, $params);
-            $this->stream = new Stream($resource);
-
-            // Reset the Footer Length:
-            $this->footerLen = 0;
-        }
-    }
 }
