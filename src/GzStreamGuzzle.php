@@ -22,7 +22,7 @@ class GzStreamGuzzle implements StreamInterface
     public function __construct(StreamInterface $stream, $readOnly = false, $level = 6)
     {
         $this->stream = $stream;
-		$this->level = $level;
+        $this->level = $level;
 
         if (!$stream->isWritable() || $readOnly) {
             $this->mode = 'r';
@@ -42,7 +42,7 @@ class GzStreamGuzzle implements StreamInterface
 
     public function readOnlyStream()
     {
-		return new self($this->stream, true, $this->level);
+        return new self($this->stream, true, $this->level);
     }
 
     public function read($length)
@@ -130,7 +130,7 @@ class GzStreamGuzzle implements StreamInterface
 
     public function write($string)
     {
-    	if ($this->footerLen > 0) {
+        if ($this->footerLen > 0) {
             return false;
         }
 
@@ -160,7 +160,7 @@ class GzStreamGuzzle implements StreamInterface
 
     public function getWriteSize()
     {
-		return $this->writeSize;
+        return $this->writeSize;
     }
 
     public function close()
@@ -214,22 +214,21 @@ class GzStreamGuzzle implements StreamInterface
     // Not working as I hoped:
     public function undoWriteFooter()
     {
-		if ($this->footerLen > 0)
-		{
-			// Attempt to remove the footer content already written by moving to the start of the footer position:
-			$this->seek(($this->headerLen + $this->writeSize) - 1);
+        if ($this->footerLen > 0) {
+        // Attempt to remove the footer content already written by moving to the start of the footer position:
+            $this->seek(($this->headerLen + $this->writeSize) - 1);
 
-			// Restore Hash Context:
-			$this->hashCtx = $this->hashCtxBeforeFooter;
+            // Restore Hash Context:
+            $this->hashCtx = $this->hashCtxBeforeFooter;
 
-			// Add the filter back in:
-			$resource = StreamWrapper::getResource($this->stream);
+            // Add the filter back in:
+            $resource = StreamWrapper::getResource($this->stream);
             $params = array('level' => $this->level);
             $this->filter = stream_filter_append($resource, 'zlib.deflate', STREAM_FILTER_WRITE, $params);
             $this->stream = new Stream($resource);
 
             // Reset the Footer Length:
             $this->footerLen = 0;
-		}
+        }
     }
 }
