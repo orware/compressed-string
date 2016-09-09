@@ -1,7 +1,7 @@
 <?php
-use Orware\Compressed\String;
+use Orware\Compressed\CompressedString;
 
-class StringTest extends \PHPUnit_Framework_TestCase
+class CompressedStringTest extends \PHPUnit_Framework_TestCase
 {
     /*public function testReadStream()
     {
@@ -30,7 +30,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
     public function testWriteStream()
     {
-        $compressedString = new String();
+        $compressedString = new CompressedString();
 
         $content = 'The quick brown fox jumps over the lazy dog';
         $compressedString->write($content);
@@ -40,7 +40,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
     public function testMixedWriteStream()
     {
-        $compressedString = new String();
+        $compressedString = new CompressedString();
 
         $content = 'The quick brown fox jumps over the lazy dog';
         $compressedString->write($content);
@@ -60,7 +60,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $this->memoryUsage(__METHOD__, 'Start');
 
-        $compressedString = new String();
+        $compressedString = new CompressedString();
 
         $content = 'The quick brown fox jumps over the lazy dog';
         $compressedString->write($content);
@@ -78,7 +78,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
 
     public function testPrependAndWriteStream()
     {
-        $compressedString = new String();
+        $compressedString = new CompressedString();
 
         $content = 'The quick brown fox jumps over the lazy dog';
         $compressedString->write($content);
@@ -98,10 +98,10 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $content = file_get_contents('README.md');
 
-        $compressedString1 = new String(false, 1);
+        $compressedString1 = new CompressedString(false, 1);
         $compressedString1->write($content);
 
-        $compressedString2 = new String(false, 6);
+        $compressedString2 = new CompressedString(false, 6);
         $compressedString2->write($content);
 
         $size1 = $compressedString1->getCompressedSize();
@@ -118,7 +118,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
     public function testReadGzipFile()
     {
         $this->memoryUsage(__METHOD__, 'Start');
-        $compressedStringFile = new String(true, 6, __DIR__.'/files/companies_first_10.gz');
+        $compressedStringFile = new CompressedString(true, 6, __DIR__.'/files/companies_first_10.gz');
 
         $readOnlyStream = $compressedStringFile->getReadOnlyStream();
         $i = 0;
@@ -141,7 +141,7 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $this->memoryUsage(__METHOD__, 'Start');
 
-        $compressedString = new String();
+        $compressedString = new CompressedString();
 
         $content = file_get_contents(__DIR__.'/files/companies_first_10.json');
         $compressedString->write($content);

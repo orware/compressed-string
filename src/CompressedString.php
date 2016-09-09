@@ -7,7 +7,7 @@ use GuzzleHttp\Psr7\StreamDecoratorTrait;
 use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\StreamWrapper;
 
-class String
+class CompressedString
 {
     protected $gzStream = null;
     protected $stream = null;

@@ -22,9 +22,9 @@ Usage
 
 It's primarily intended to be used in a write forward way (primarily because going back to the beginning of a gzip string requires it to be decoded, so prepending should be discouraged from excessive use), but you do have the option to prepend text when needed:
 ```php
-use Orware\Compressed\String;
+use Orware\Compressed\CompressedString;
 
-$compressedString = new String();
+$compressedString = new CompressedString();
 
 // You may write multiple times:
 $content = 'The quick brown fox jumps over the lazy dog';
@@ -33,7 +33,7 @@ $compressedString->write($content);
 $moreContent = 'The quick brown fox jumps over the lazy dog';
 $compressedString->write($moreContent);
 
-// You can prepend text as well 
+// You can prepend text as well
 // (currently this involves creating a new stream, adding the prepended text, then copying the existing stream into the new stream):
 $textToPrepend = 'PREPENDED';
 $compressedString->prepend($textToPrepend);
@@ -59,38 +59,37 @@ $compressedString->writeCompressedContents('tests/files/appended_test_compressed
 
 There's also the ability to merge in one or more compressed strings into a "wrapper" string. In my case my wrapper contained some metadata about the JSON results.
 ```php
-use Orware\Compressed\String;
-use Orware\Compressed\StringList;
-use Orware\Compressed\StringMerge;
+use Orware\Compressed\CompressedString;
+use Orware\Compressed\CompressedStringList;
 
-$compressedString1 = new String();
+$compressedString1 = new CompressedString();
 $content = 'My first string';
 $compressedString1->write($content);
 
-$compressedString2 = new String();
+$compressedString2 = new CompressedString();
 $content = 'My second string';
 $compressedString2->write($content);
 
-$compressedString3 = new String();
+$compressedString3 = new CompressedString();
 $content = 'My third string';
 $compressedString3->write($content);
 
 // You must use this StringList class (it's what the merge call below expects):
-$list = new StringList();
+$list = new CompressedStringList();
 
 $list->enqueue($compressedString1);
 $list->enqueue($compressedString2);
 $list->enqueue($compressedString3);
 
-// The default placeholder is #|_|# 
+// The default placeholder is #|_|#
 // Each instance of that placeholder below will get replaced:
 $subject = '{"string1":"#|_|#","string2":"#|_|#","string3":"#|_|#"}';
 
 // The end result is a new compressed string.
-// Depending on the size of your compressed strings execution 
-// time may go up during a merge since each has to be decoded 
+// Depending on the size of your compressed strings execution
+// time may go up during a merge since each has to be decoded
 // and compressed again when merged into the new string.
-$mergedString = StringMerge::merge($subject, '#|_|#', $list);
+$mergedString = CompressedStringList::merge($subject, '#|_|#', $list);
 
 ```
 

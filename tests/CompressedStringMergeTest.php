@@ -1,9 +1,9 @@
 <?php
-use Orware\Compressed\String;
-use Orware\Compressed\StringList;
+use Orware\Compressed\CompressedString;
+use Orware\Compressed\CompressedStringList;
 use Orware\Compressed\StringMerge;
 
-class StringMergeTest extends \PHPUnit_Framework_TestCase
+class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
 {
     public function memoryUsage($method, $stage = '')
     {
@@ -26,19 +26,19 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
     {
         $this->memoryUsage(__METHOD__, '');
 
-        $compressedString1 = new String();
+        $compressedString1 = new CompressedString();
         $content = 'My first string';
         $compressedString1->write($content);
 
-        $compressedString2 = new String();
+        $compressedString2 = new CompressedString();
         $content = 'My second string';
         $compressedString2->write($content);
 
-        $compressedString3 = new String();
+        $compressedString3 = new CompressedString();
         $content = 'My third string';
         $compressedString3->write($content);
 
-        $list = new StringList();
+        $list = new CompressedStringList();
 
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
@@ -46,7 +46,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 
         $subject = '{"string1":"#|_|#","string2":"#|_|#","string3":"#|_|#"}';
 
-        $mergedString = StringMerge::merge($subject, '#|_|#', $list);
+        $mergedString = CompressedStringList::merge($subject, '#|_|#', $list);
 
         $expected = '{"string1":"My first string","string2":"My second string","string3":"My third string"}';
         $this->assertEquals($expected, $mergedString->getDecompressedContents());
@@ -56,7 +56,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
     {
         $this->memoryUsage(__METHOD__, 'Start');
 
-        $compressedString1 = new String();
+        $compressedString1 = new CompressedString();
         $handle = fopen('tests/files/companies_first_10.json', "r");
         if ($handle) {
             while (($buffer = fgets($handle, 4096)) !== false) {
@@ -66,7 +66,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
             fclose($handle);
         }
 
-        $compressedString2 = new String();
+        $compressedString2 = new CompressedString();
         $handle = fopen('tests/files/companies_first_10.json', "r");
         if ($handle) {
             while (($buffer = fgets($handle, 4096)) !== false) {
@@ -78,12 +78,12 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 
         $subject = '[{"queryType":"SELECT","rowCount":4178,"executionTimeMilliseconds":4764.52,"executionTimeSeconds":4.76,"memoryUsageBytes":323344,"memoryUsageMegabytes":0.31,"cachedResponse":false,"data":#|_|#,"error":false},{"queryType":"SELECT","rowCount":4178,"executionTimeMilliseconds":4764.52,"executionTimeSeconds":4.76,"memoryUsageBytes":323344,"memoryUsageMegabytes":0.31,"cachedResponse":false,"data":#|_|#,"error":false}]';
 
-        $list = new StringList();
+        $list = new CompressedStringList();
 
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
 
-        $mergedString = StringMerge::merge($subject, '#|_|#', $list);
+        $mergedString = CompressedStringList::merge($subject, '#|_|#', $list);
 
         $this->log("Merged String Size is: " . $mergedString->getCompressedSize());
 
@@ -99,7 +99,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
     {
         $this->memoryUsage(__METHOD__, 'Start');
 
-        $compressedString1 = new String();
+        $compressedString1 = new CompressedString();
         $handle = fopen('tests/files/companies_first_10.json', "r");
         if ($handle) {
             while (($buffer = fgets($handle, 4096)) !== false) {
@@ -109,7 +109,7 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
             fclose($handle);
         }
 
-        $compressedString2 = new String();
+        $compressedString2 = new CompressedString();
         $handle = fopen('tests/files/companies_first_10.json', "r");
         if ($handle) {
             while (($buffer = fgets($handle, 4096)) !== false) {
@@ -146,12 +146,12 @@ class StringMergeTest extends \PHPUnit_Framework_TestCase
 
         $subject[] = $queryObject2;
 
-        $list = new StringList();
+        $list = new CompressedStringList();
 
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
 
-        $mergedString = StringMerge::merge($subject, '#|_|#', $list);
+        $mergedString = CompressedStringList::merge($subject, '#|_|#', $list);
 
         // Actual size should be less than 80,000 bytes:
         $this->assertLessThanOrEqual(80000, $mergedString->getCompressedSize());
