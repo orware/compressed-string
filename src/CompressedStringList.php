@@ -11,7 +11,7 @@ class CompressedStringList
         $this->queue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_DELETE);
     }
 
-	public static function merge($subject, $delimiter, CompressedStringList $gzippedStrings)
+    public static function merge($subject, $delimiter, CompressedStringList $gzippedStrings)
     {
         if (!is_string($subject)) {
             $subject = json_encode($subject);
