@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\StreamWrapper;
 
 class CompressedString
 {
+    const DEFAULT_DELIMITER = '#|_|#';
     protected $gzStream = null;
     protected $stream = null;
     protected $streamObject = null;

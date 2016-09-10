@@ -76,14 +76,14 @@ class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
             fclose($handle);
         }
 
-        $subject = '[{"queryType":"SELECT","rowCount":4178,"executionTimeMilliseconds":4764.52,"executionTimeSeconds":4.76,"memoryUsageBytes":323344,"memoryUsageMegabytes":0.31,"cachedResponse":false,"data":#|_|#,"error":false},{"queryType":"SELECT","rowCount":4178,"executionTimeMilliseconds":4764.52,"executionTimeSeconds":4.76,"memoryUsageBytes":323344,"memoryUsageMegabytes":0.31,"cachedResponse":false,"data":#|_|#,"error":false}]';
+        $subject = '[{"queryType":"SELECT","rowCount":4178,"executionTimeMilliseconds":4764.52,"executionTimeSeconds":4.76,"memoryUsageBytes":323344,"memoryUsageMegabytes":0.31,"cachedResponse":false,"data":"#|_|#","error":false},{"queryType":"SELECT","rowCount":4178,"executionTimeMilliseconds":4764.52,"executionTimeSeconds":4.76,"memoryUsageBytes":323344,"memoryUsageMegabytes":0.31,"cachedResponse":false,"data":"#|_|#","error":false}]';
 
         $list = new CompressedStringList();
 
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
 
-        $mergedString = CompressedStringList::merge($subject, '#|_|#', $list);
+        $mergedString = CompressedStringList::merge($subject, CompressedString::DEFAULT_DELIMITER, $list, true);
 
         $this->log("Merged String Size is: " . $mergedString->getCompressedSize());
 
@@ -128,7 +128,7 @@ class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
         $queryObject1->memoryUsageBytes = 4178;
         $queryObject1->memoryUsageMegabytes = 4178;
         $queryObject1->cachedResponse = 4178;
-        $queryObject1->data = '#|_|#';
+        $queryObject1->data = CompressedString::DEFAULT_DELIMITER;
         $queryObject1->error = false;
 
         $subject[] = $queryObject1;
@@ -141,7 +141,7 @@ class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
         $queryObject2->memoryUsageBytes = 4178;
         $queryObject2->memoryUsageMegabytes = 4178;
         $queryObject2->cachedResponse = 4178;
-        $queryObject2->data = '#|_|#';
+        $queryObject2->data = CompressedString::DEFAULT_DELIMITER;
         $queryObject2->error = false;
 
         $subject[] = $queryObject2;
@@ -151,7 +151,7 @@ class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
 
-        $mergedString = CompressedStringList::merge($subject, '#|_|#', $list);
+        $mergedString = CompressedStringList::merge($subject, CompressedString::DEFAULT_DELIMITER, $list, true);
 
         // Actual size should be less than 80,000 bytes:
         $this->assertLessThanOrEqual(80000, $mergedString->getCompressedSize());
