@@ -6,6 +6,25 @@ use GuzzleHttp\Psr7\StreamDecoratorTrait;
 use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\StreamWrapper;
 
+/**
+* Modified version of the original class created by Tom Westcott that can be found here:
+* https://github.com/cyberdummy/gzstream/blob/master/src/GzStreamGuzzle.php
+*
+* Mainly the issue for me was that the original class had its internal properties
+* and certain methods (writeFooter for example) set as private, which made
+* some of the things I wanted to use the class for, more difficult.
+*
+* I've integrated this modified version of the class into this package.
+*
+* Changes made:
+*  - Convert properties to protected
+*  - Changed private methods to protected
+*  - Added ability to specify Gzip compression level
+*  - Added getReadOnlyCopy() method
+*  - Added writeFooterEarly() method
+*  - Added default read() length
+*  - Added getWriteSize() method
+*/
 class GzStreamGuzzle implements StreamInterface
 {
     use StreamDecoratorTrait;
@@ -40,14 +59,9 @@ class GzStreamGuzzle implements StreamInterface
         }
     }
 
-    public function readOnlyStream()
+    public function getReadOnlyCopy()
     {
         return new self($this->stream, true, $this->level);
-    }
-
-    public function writeableStream()
-    {
-        return new self($this->stream, false, $this->level);
     }
 
     public function read($length = 65536)

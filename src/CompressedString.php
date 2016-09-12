@@ -147,9 +147,6 @@ class CompressedString
     * in these situations you may use the optional $options
     * and $depth parameters.
     *
-    * Returns the current size (in bytes) of the uncompressed data that has
-    * been written so far.
-    *
     * @param mixed $string
     * @param int $options
     * @param int $depth
@@ -215,7 +212,7 @@ class CompressedString
     public function prepend($string, $compressionLevel = 6)
     {
         $this->prepareForRead();
-        $gzStreamReadOnly = $this->getGzStream()->readOnlyStream();
+        $gzStreamReadOnly = $this->getGzStream()->getReadOnlyCopy();
 
         $this->replaceStream(false, $compressionLevel, 'php://memory');
 
@@ -374,20 +371,23 @@ class CompressedString
     }
 
     /**
-    * put your comment there...
+    * Returns a read-only stream that can be used
+    * for reading the decompressed contents back out
+    * as a stream.
     *
+    * @return GzStreamGuzzle
     */
     public function getDecompressedReadOnlyStream()
     {
         if ($this->isRealFile && $this->isReadOnly()) {
             return $this->getGzStream();
         } elseif ($this->isRealFile) {
-            return $this->getGzStream()->readOnlyStream();
+            return $this->getGzStream()->getReadOnlyCopy();
         }
 
         // More specifically for the in-memory streams:
         $this->prepareForRead();
-        $gzStreamReadOnly = $this->getGzStream()->readOnlyStream();
+        $gzStreamReadOnly = $this->getGzStream()->getReadOnlyCopy();
 
         return $gzStreamReadOnly;
     }
