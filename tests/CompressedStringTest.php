@@ -120,7 +120,7 @@ class CompressedStringTest extends \PHPUnit_Framework_TestCase
         $this->memoryUsage(__METHOD__, 'Start');
         $compressedStringFile = new CompressedString(true, 6, __DIR__.'/files/companies_first_10.gz');
 
-        $readOnlyStream = $compressedStringFile->getReadOnlyStream();
+        $readOnlyStream = $compressedStringFile->getDecompressedReadOnlyStream();
         $i = 0;
         $firstLineOutput = '';
         while ($buffer = $readOnlyStream->read()) {
@@ -137,6 +137,130 @@ class CompressedStringTest extends \PHPUnit_Framework_TestCase
         $this->memoryUsage(__METHOD__, 'Finish');
     }
 
+    public function testCompressedReadOfReadOnlyGzipFile()
+    {
+        $this->memoryUsage(__METHOD__, 'Start');
+        $compressedStringFile = new CompressedString(true, 6, __DIR__.'/files/companies_first_10.gz');
+
+        $compressedReadOnlyStream = $compressedStringFile->getCompressedReadOnlyStream();
+
+        $compressedString = '';
+        while ($buffer = $compressedReadOnlyStream->read()) {
+            $compressedString .= $buffer;
+        }
+
+        //$this->log(substr($compressedString, 0, 100));
+        $uncompressedString = gzdecode($compressedString);
+        //$this->log(substr($uncompressedString, 0, 100));
+
+        $this->assertContains('_id', $uncompressedString);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+    }
+
+    public function testCompressedReadOfWritableGzipFile()
+    {
+        $this->memoryUsage(__METHOD__, 'Start');
+        $compressedStringFile = new CompressedString(false, 6, __DIR__.'/files/companies_first_10.gz');
+
+        $compressedReadOnlyStream = $compressedStringFile->getCompressedReadOnlyStream();
+
+        $compressedString = '';
+        while ($buffer = $compressedReadOnlyStream->read()) {
+            $compressedString .= $buffer;
+        }
+
+        //$this->log(substr($compressedString, 0, 100));
+        $uncompressedString = gzdecode($compressedString);
+        //$this->log(substr($uncompressedString, 0, 100));
+
+        $this->assertContains('_id', $uncompressedString);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+    }
+
+    public function testDecompressedReadOfReadOnlyGzipFile()
+    {
+        $this->memoryUsage(__METHOD__, 'Start');
+        $compressedStringFile = new CompressedString(true, 6, __DIR__.'/files/companies_first_10.gz');
+
+        $uncompressedReadOnlyStream = $compressedStringFile->getDecompressedReadOnlyStream();
+
+        $uncompressedString = '';
+        while ($buffer = $uncompressedReadOnlyStream->read()) {
+            $uncompressedString .= $buffer;
+        }
+
+        $this->assertContains('_id', $uncompressedString);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+    }
+
+    public function testDecompressedReadOfWritableGzipFile()
+    {
+        $this->memoryUsage(__METHOD__, 'Start');
+        $compressedStringFile = new CompressedString(false, 6, __DIR__.'/files/companies_first_10.gz');
+
+        $uncompressedReadOnlyStream = $compressedStringFile->getDecompressedReadOnlyStream();
+
+        $uncompressedString = '';
+        while ($buffer = $uncompressedReadOnlyStream->read()) {
+            $uncompressedString .= $buffer;
+        }
+
+        $this->assertContains('_id', $uncompressedString);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+    }
+
+    public function testCompressedReadOfInMemoryCompressedString()
+    {
+        $this->memoryUsage(__METHOD__, 'Start');
+        $compressedInMemoryString = new CompressedString();
+
+        $compressedInMemoryString->write(str_repeat('_id', 100));
+
+        $compressedReadOnlyStream = $compressedInMemoryString->getCompressedReadOnlyStream();
+
+        $compressedString = '';
+        while ($buffer = $compressedReadOnlyStream->read()) {
+            $compressedString .= $buffer;
+        }
+
+        //$this->log(substr($compressedString, 0, 100));
+        $uncompressedString = gzdecode($compressedString);
+        //$this->log(substr($uncompressedString, 0, 100));
+
+        $this->assertContains('_id', $uncompressedString);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+    }
+
+    public function testDecompressedReadOfInMemoryCompressedString()
+    {
+        $this->memoryUsage(__METHOD__, 'Start');
+        $compressedInMemoryString = new CompressedString();
+
+        $compressedInMemoryString->write(str_repeat('_id', 100));
+
+        $uncompressedReadOnlyStream = $compressedInMemoryString->getDecompressedReadOnlyStream();
+
+        $uncompressedString = '';
+        while ($buffer = $uncompressedReadOnlyStream->read()) {
+            $uncompressedString .= $buffer;
+        }
+
+        $this->assertContains('_id', $uncompressedString);
+
+        $this->log(__METHOD__, false);
+        $this->memoryUsage(__METHOD__, 'Finish');
+    }
+
     public function testWriteFileAndReadStream()
     {
         $this->memoryUsage(__METHOD__, 'Start');
@@ -148,7 +272,7 @@ class CompressedStringTest extends \PHPUnit_Framework_TestCase
 
         $compressedString->writeCompressedContents(__DIR__.'/files/tmp/write_test.gz');
 
-        $readOnlyStream = $compressedString->getReadOnlyStream();
+        $readOnlyStream = $compressedString->getDecompressedReadOnlyStream();
         $i = 0;
         $firstLineOutput = '';
         while ($buffer = $readOnlyStream->read()) {

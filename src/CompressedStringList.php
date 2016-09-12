@@ -11,7 +11,7 @@ class CompressedStringList
         $this->queue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_DELETE);
     }
 
-    public static function merge($subject, $delimiter, CompressedStringList $gzippedStrings, $addQuotesToDelimiter = false)
+    public static function merge($subject, $delimiter, CompressedStringList $gzippedStrings, $compressionLevel = 6, $addQuotesToDelimiter = false)
     {
         if (!is_string($subject)) {
             $subject = json_encode($subject);
@@ -23,15 +23,15 @@ class CompressedStringList
 
         $subjectParts = explode($delimiter, $subject);
 
-        $merged = new CompressedString();
+        $merged = new CompressedString(false, $compressionLevel);
 
         foreach ($subjectParts as $part) {
             $merged->write($part);
             if (!$gzippedStrings->isEmpty()) {
                 $string = $gzippedStrings->dequeue();
 
-                $readStream = $string->getReadOnlyStream();
-                while ($buffer = $readStream->read(4096)) {
+                $readStream = $string->getDecompressedReadOnlyStream();
+                while ($buffer = $readStream->read()) {
                     $merged->write($buffer);
                 }
             }

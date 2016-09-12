@@ -83,7 +83,7 @@ class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
 
-        $mergedString = CompressedStringList::merge($subject, CompressedString::DEFAULT_DELIMITER, $list, true);
+        $mergedString = CompressedStringList::merge($subject, CompressedString::DEFAULT_DELIMITER, $list, 6, true);
 
         $this->log("Merged String Size is: " . $mergedString->getCompressedSize());
 
@@ -151,7 +151,7 @@ class CompressedStringMergeTest extends \PHPUnit_Framework_TestCase
         $list->enqueue($compressedString1);
         $list->enqueue($compressedString2);
 
-        $mergedString = CompressedStringList::merge($subject, CompressedString::DEFAULT_DELIMITER, $list, true);
+        $mergedString = CompressedStringList::merge($subject, CompressedString::DEFAULT_DELIMITER, $list, 6, true);
 
         // Actual size should be less than 80,000 bytes:
         $this->assertLessThanOrEqual(80000, $mergedString->getCompressedSize());
