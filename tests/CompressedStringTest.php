@@ -3,14 +3,6 @@ use Orware\Compressed\CompressedString;
 
 class CompressedStringTest extends \PHPUnit_Framework_TestCase
 {
-    /*public function testReadStream()
-    {
-        $content = gzencode('test');
-        $a = Psr7\stream_for($content);
-        $b = new GzStreamGuzzle($a);
-        $this->assertEquals('test', (string) $b);
-    }
-*/
     public function memoryUsage($method, $stage = '')
     {
         fwrite(STDOUT, "\n");
